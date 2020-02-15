@@ -2,6 +2,7 @@ package com.template.flows;
 
 import co.paralleluniverse.fibers.Suspendable;
 import com.google.common.collect.ImmutableList;
+import com.template.schema.PropertyDetails;
 import com.template.states.PropriedadeState;
 import jdk.nashorn.internal.ir.annotations.Immutable;
 import net.corda.core.contracts.StateAndRef;
@@ -29,6 +30,13 @@ public class AprovacaoPropriedadeFlow extends FlowLogic<SignedTransaction> {
         StateAndRef<PropriedadeState> inputStateAndRef = getServiceHub().getVaultService().queryBy(PropriedadeState.class,queryCriteria).getStates().get(0);
 
         Party proprietario = inputStateAndRef.getState().getData().getProprietario();
+
+        PropriedadeState propriedadeState = null;
+
+        if(proprietario.getName().toString().contains("Bank")){
+            PropertyDetails = inputStateAndRef.getState().getData()
+        }
+
         return null;
     }
 }
