@@ -36,6 +36,12 @@ public class PropriedadeContract implements Contract {
 
     private void verificaTransferir(LedgerTransaction tx, CommandWithParties<PropertyCommand> command) {
         requireThat (require -> {
+            require.using("A propriedade deve ter apenas 1 input",tx.getInputs().size() == 1);
+            require.using("A propriedade deve possuir apenas 1 output",tx.getOutputs().size() == 1);
+
+            final PropertyDetails in = tx.inputsOfType(PropertyDetails.class).get(0);
+            final PropertyDetails out = tx.outputsOfType(PropertyDetails.class).get(0);
+
             return null;
         });
     }
