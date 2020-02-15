@@ -1,6 +1,8 @@
 package com.template.contracts;
 
+import com.sun.org.apache.xerces.internal.util.PropertyState;
 import com.template.schema.PropertyDetails;
+import com.template.states.PropriedadeState;
 import net.corda.core.contracts.CommandData;
 import net.corda.core.contracts.CommandWithParties;
 import net.corda.core.contracts.Contract;
@@ -20,7 +22,7 @@ public class PropriedadeContract implements Contract {
     // does not throw an exception.
     @Override
     public void verify(LedgerTransaction tx) {
-        CommandWithParties<PropertyCommand> command = requireSingleCommand(tx.getCommand,PropertyCommands.class);
+        CommandWithParties<PropertyCommand> command = requireSingleCommand(tx.getCommands(),PropertyCommand.class);
         PropertyCommand commandType = command.getValue();
         
         if(commandType instanceof PropertyCommand.Criar) verificaCriar(tx,command);
@@ -39,8 +41,8 @@ public class PropriedadeContract implements Contract {
             require.using("A propriedade deve ter apenas 1 input",tx.getInputs().size() == 1);
             require.using("A propriedade deve possuir apenas 1 output",tx.getOutputs().size() == 1);
 
-            final PropertyDetails in = tx.inputsOfType(PropertyDetails.class).get(0);
-            final PropertyDetails out = tx.outputsOfType(PropertyDetails.class).get(0);
+            final PropriedadeState in = tx.inputsOfType(PropriedadeState.class).get(0);
+            final PropriedadeState out = tx.outputsOfType(PropriedadeState.class).get(0);
 
             return null;
         });
@@ -50,7 +52,7 @@ public class PropriedadeContract implements Contract {
         requireThat (require -> {
             require.using("A propriedade nao deve ter nenhum input",tx.getInputs().isEmpty());
             require.using("A propriedade deve possuir apenas 1 output",tx.getOutputs().size() == 1);
-        final PropertyDetails out = tx.outputsOfType(PropertyDetails.class).get(0);
+        final PropriedadeState out = tx.outputsOfType(PropriedadeState.class).get(0);
         return null;
         });
     }
