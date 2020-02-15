@@ -1,11 +1,13 @@
 package com.template.contracts;
 
+import com.template.schema.PropertyDetails;
 import net.corda.core.contracts.CommandData;
 import net.corda.core.contracts.CommandWithParties;
 import net.corda.core.contracts.Contract;
 import net.corda.core.transactions.LedgerTransaction;
 
 import static net.corda.core.contracts.ContractsDSL.requireSingleCommand;
+import static net.corda.core.contracts.ContractsDSL.requireThat;
 
 // ************
 // * Contract *
@@ -27,12 +29,24 @@ public class PropriedadeContract implements Contract {
     }
 
     private void verificaAprovacaoBanco(LedgerTransaction tx, CommandWithParties<PropertyCommand> command) {
+        requireThat (require -> {
+            return null;
+        });
     }
 
     private void verificaTransferir(LedgerTransaction tx, CommandWithParties<PropertyCommand> command) {
+        requireThat (require -> {
+            return null;
+        });
     }
 
     private void verificaCriar(LedgerTransaction tx, CommandWithParties<PropertyCommand> command) {
+        requireThat (require -> {
+            require.using("A propriedade nao deve ter nenhum input",tx.getInputs().isEmpty());
+            require.using("A propriedade deve possuir apenas 1 output",tx.getOutputs().size() == 1);
+        final PropertyDetails out = tx.outputsOfType(PropertyDetails.class).get(0);
+        return null;
+        });
     }
 
     // Used to indicate the transaction's intent.
