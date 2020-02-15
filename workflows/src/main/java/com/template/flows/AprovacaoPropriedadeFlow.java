@@ -2,6 +2,7 @@ package com.template.flows;
 
 import co.paralleluniverse.fibers.Suspendable;
 import com.google.common.collect.ImmutableList;
+import com.template.contracts.PropertyCommand;
 import com.template.schema.PropertyDetails;
 import com.template.states.PropriedadeState;
 import jdk.nashorn.internal.ir.annotations.Immutable;
@@ -12,6 +13,7 @@ import net.corda.core.flows.FlowLogic;
 import net.corda.core.identity.Party;
 import net.corda.core.node.services.vault.QueryCriteria;
 import net.corda.core.transactions.SignedTransaction;
+import net.corda.core.transactions.TransactionBuilder;
 import net.corda.core.utilities.ProgressTracker;
 
 public class AprovacaoPropriedadeFlow extends FlowLogic<SignedTransaction> {
@@ -34,9 +36,16 @@ public class AprovacaoPropriedadeFlow extends FlowLogic<SignedTransaction> {
         PropriedadeState propriedadeState = null;
 
         if(proprietario.getName().toString().contains("Bank")){
-            PropertyDetails = inputStateAndRef.getState().getData()
+            propriedadeState = inputStateAndRef.getState().getData().aprovacaoDoBanco(new Boolean(isAprovado).toString());
+        }else if (proprietario.getName().toString().contains("Surveyor")){
+            propriedadeState = inputStateAndRef.getState().getData().aprovacaoDoEngenheiro(new Boolean(isAprovado).toString());
         }
 
-        return null;
+        TransactionBuilder builder = new TransactionBuilder(inputStateAndRef.getState().getNotary())
+                .addInputState(inputStateAndRef)
+                .addOutputState(propriedadeState,"com.template.contracts.PropriedadeContract")
+                .addCommand(new PropertyCommand.AprovacaoBanco(),getOurIdentity().getOwningKey());
+
+                return subFlow(new VerifySignAndFinalizeFlow(builder));
     }
 }

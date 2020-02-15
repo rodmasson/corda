@@ -137,6 +137,45 @@ public class PropriedadeState implements LinearState, QueryableState {
         return Objects.hash(propriedadeId, propriedadeEndereco, proprietario, compradorId, vendedorId, dataTime, isHipoteca, isAprovacaoEngenheiro, linearId);
     }
 
+    public PropriedadeState transferir(Party novoProprietario){
+        return new PropriedadeState(propriedadeId,
+        propriedadeEndereco,
+        proprietario,
+        compradorId,
+        vendedorId,
+        dataTime,
+        isHipoteca,
+        isAprovacaoEngenheiro,
+        propriedadepreco,
+        linearId);
+    }
+
+    public PropriedadeState aprovacaoDoBanco(String isAprovado){
+        return new PropriedadeState(propriedadeId,
+                propriedadeEndereco,
+                proprietario,
+                compradorId,
+                vendedorId,
+                dataTime,
+                isAprovado,
+                isAprovacaoEngenheiro,
+                propriedadepreco,
+                linearId);
+    }
+
+    public PropriedadeState aprovacaoDoEngenheiro(String isAprovado){
+        return new PropriedadeState(propriedadeId,
+                propriedadeEndereco,
+                proprietario,
+                compradorId,
+                vendedorId,
+                dataTime,
+                isAprovado,
+                isAprovacaoEngenheiro,
+                propriedadepreco,
+                linearId);
+    }
+
     public List<AbstractParty> getParticipantes() { return ImmutableList.of(proprietario);}
 
 }
