@@ -46,6 +46,6 @@ public class AprovacaoPropriedadeFlow extends FlowLogic<SignedTransaction> {
                 .addOutputState(propriedadeState,"com.template.contracts.PropriedadeContract")
                 .addCommand(new PropertyCommand.AprovacaoBanco(),getOurIdentity().getOwningKey());
 
-                return subFlow(new VerifySignAndFinalizeFlow(builder));
+                return subFlow(new VerificaAssinaturaEFinalizaFlow(builder));
     }
 }
