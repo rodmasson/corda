@@ -2,19 +2,22 @@ package com.template.webserver;
 
 import com.template.flows.InicializaPropriedadeFlow;
 import com.template.flows.PropriedadeBean;
+import com.template.states.PropriedadeState;
+import net.corda.core.contracts.StateAndRef;
+import net.corda.core.contracts.UniqueIdentifier;
 import net.corda.core.identity.Party;
 import net.corda.core.messaging.CordaRPCOps;
+import net.corda.core.node.services.Vault;
+import net.corda.core.node.services.vault.QueryCriteria;
 import net.corda.core.transactions.SignedTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.*;
-
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -31,13 +34,31 @@ public class Controller {
     }
 
     @GetMapping(value = "/templateendpoint", produces = "text/plain")
-    private String templateendpoint() {
-        return "Define an endpoint here.";
+    private String templateendpoint() {return "Define an endpoint here."; }
+
+    @GetMapping (value = "/buscarTodasPropriedades", produces = "application/json")
+    public List<StateAndRef<PropriedadeState>> buscaTodasPropriedades(){
+        return proxy.vaultQuery(PropriedadeState.class).getStates();
     }
 
-    @POST
-    @Path("inicializaPropriedadeTransacao")
-    public Response inicializaPropriedadeTransacao(PropriedadeBean propriedadeBean) throws ExecutionException, InterruptedException {
+    @GetMapping(value="/buscarPropriedadePorId", produces = "application/json")
+    public List<StateAndRef<PropriedadeState>> buscarPropriedadePorID(@QueryParam("id") String idString){
+        UniqueIdentifier linearId = UniqueIdentifier.Companion.fromString(idString);
+        List<UniqueIdentifier> linearIds = new ArrayList<>();
+        linearIds.add(linearId);
+
+        QueryCriteria linearCriteriaAll = new QueryCriteria.LinearStateQueryCriteria(
+                null,
+                linearIds,
+                Vault.StateStatus.ALL,
+                null
+        );
+
+        return proxy.vaultQueryByCriteria(linearCriteriaAll,PropriedadeState.class).getStates();
+    }
+
+    @PostMapping(value = "/inicializaPropriedadeTransacao", consumes = "application/json", produces = "application/json")
+    public Response inicializaPropriedadeTransacao(@RequestBody PropriedadeBean propriedadeBean) throws ExecutionException, InterruptedException {
         Party proprietario = proxy.partiesFromName(propriedadeBean
                 .getProprietario(), false).iterator().next();
         try {
